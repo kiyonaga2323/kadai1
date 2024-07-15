@@ -7,13 +7,17 @@
   </head>
   <body>
     <h1 class="app-title">チャット</h1>
-    <ul>
-      <!-- posts -->
+    <ul id="chat-messages">
     </ul>
-    <form action="/send" method="post">
+    <form action="/send" method="post" id="message-form">
       <input id="message-input" type="text" name="message" />
       <button type="submit">送信</button>
     </form>
+    <div id="reaction-buttons">
+      <button class="reaction" onclick="addReaction('👍')">👍</button>
+      <button class="reaction" onclick="addReaction('❤️')">❤️</button>
+      <button class="reaction" onclick="addReaction('😄')">😄</button>
+    </div>
     <script src="/script.js"></script>
   </body>
 </html>
