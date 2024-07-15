@@ -1,28 +1,36 @@
-import fs from "node:fs";
-import express from "express";
-import { PrismaClient } from "@prisma/client";
-import escapeHTML from "escape-html";
+import fs from 'node:fs';
+import express from 'express';
+import { PrismaClient } from '@prisma/client';
+import escapeHTML from 'escape-html';
 
 const app = express();
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static("static"));
 const prisma = new PrismaClient();
 
-const template = fs.readFileSync("./template.html", "utf-8");
-app.get("/", async (request, response) => {
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static('static'));
+
+const template = fs.readFileSync('./template.html', 'utf-8');
+
+async function getChatHtml() {
   const posts = await prisma.post.findMany();
   const html = template.replace(
-    "<!-- posts -->",
-    posts.map((post) => `<li>${escapeHTML(post.message)}</li>`).join(""),
+    '<!-- posts -->',
+    posts.map((post) => `<li>${escapeHTML(post.message)}</li>`).join('')
   );
-  response.send(html);
+  return html;
+}
+
+app.get('/', async (req, res) => {
+  const html = await getChatHtml();
+  res.send(html);
 });
 
-app.post("/send", async (request, response) => {
+app.post('/send', async (req, res) => {
+  const { message } = req.body;
   await prisma.post.create({
-    data: { message: request.body.message },
+    data: { message }
   });
-  response.redirect("/");
+  response.redirect('/');
 });
 
 app.listen(3000);
